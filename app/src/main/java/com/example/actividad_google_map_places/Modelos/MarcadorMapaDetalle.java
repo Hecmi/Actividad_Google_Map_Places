@@ -139,7 +139,7 @@ public class MarcadorMapaDetalle {
         if (pais != "") direccion_completa += pais ;
         if (ciudad != "") direccion_completa += ", " + ciudad;
         if (ruta != "") direccion_completa += ", " + ruta;
-        if (ruta != "") direccion_completa += calle_numero;
+        if (ruta != "") direccion_completa += " " + calle_numero;
 
         marcadorMapaDetalleEditar.ubicacion = direccion_completa;
 
