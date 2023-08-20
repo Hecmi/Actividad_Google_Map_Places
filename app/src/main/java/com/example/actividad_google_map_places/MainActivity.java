@@ -4,8 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -13,6 +19,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.actividad_google_map_places.Adaptadores.WindowInfoAdapter;
 import com.example.actividad_google_map_places.Modelos.MarcadorMapaDetalle;
 import com.google.android.gms.maps.CameraUpdate;
@@ -20,6 +29,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 import com.google.android.gms.maps.model.Marker;
@@ -105,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Mover el mapa a una ubicaciòn
         CameraUpdate camUpd1 = CameraUpdateFactory
-                .newLatLngZoom(new LatLng(40.711959596705796, -74.06189862638712), 18);
+                //.newLatLngZoom(new LatLng(40.711959596705796, -74.06189862638712), 18);
+                .newLatLngZoom(new LatLng(-1.0126002542342059, -79.46938622005604), 18);
         mapa.moveCamera(camUpd1);
 
         mapa.setOnMapClickListener(this);
@@ -182,11 +194,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Definir los marcadores en el mapa:
         for (int i = 0; i < marcadorMapaDetalle.size(); i++){
             MarkerOptions markerOptions = new MarkerOptions();
+            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+
             markerOptions.position(marcadorMapaDetalle.get(i).getCoordenadas());
             markerOptions.title(marcadorMapaDetalle.get(i).getNombre());
+            markerOptions.icon(bitmapDescriptor);
+
             mapa.addMarker(markerOptions);
+
+            /*Glide.with(this)
+                    .asBitmap()
+                    .load(marcadorMapaDetalle.get(i).getUrl_icono_tipo_lugar())
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap bitmap, Transition<? super Bitmap> transition) {
+
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                            mapa.addMarker(markerOptions);
+                        }
+                    });
+               */
+
         }
     }
+
 
     private void parsear_informacion_google_detalle(String response, String place_id) throws JSONException {
 
@@ -203,12 +234,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         }
+
+
+
+        mapa.setInfoWindowAdapter(new WindowInfoAdapter(this, marcadorSeleccionado));
+        markerClicked.showInfoWindow();
     }
 
+    Marker markerClicked;
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
+        //Guardar el marcador en el cual se dió click para actualizarlo posteriormente
+        //cuando finalice la API
+        markerClicked = marker;
+
         //Obtener el place_id guardado en el array de la clase para obtener los detalles del lugar.
-        /*String place_id = MarcadorMapaDetalle.get_placeid_por_latlng(marcadorMapaDetalle, marker.getPosition());
+        String place_id = MarcadorMapaDetalle.get_placeid_por_latlng(marcadorMapaDetalle, marker.getPosition());
 
         if (place_id != ""){
             //URL para ejecutar la API
@@ -216,16 +257,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     "&place_id=" + place_id +
                     "&key=" + API_KEY;
 
-            Log.i("clickeado :D", place_id);
-            Log.i("clickeado :D", api_map_detalles);
-
             //Ejecutar la API
             get_detalles_lugar_mapa(api_map_detalles, place_id);
+        }
 
-
-
-        }*/
-        marker.showInfoWindow();
         return false;
     }
 }

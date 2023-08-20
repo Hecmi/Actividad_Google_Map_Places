@@ -2,6 +2,7 @@ package com.example.actividad_google_map_places.Adaptadores;
 
 import android.content.Context;
 import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -34,24 +35,46 @@ public class WindowInfoAdapter implements GoogleMap.InfoWindowAdapter {
         TextView txtLugar = (TextView) view.findViewById(R.id.txtLugar);
         TextView txtHorario = (TextView) view.findViewById(R.id.txtHorarios);
         TextView txtUbicacion = (TextView) view.findViewById(R.id.txtUbicacion);
-        //TextView txtCoordenadas = (TextView) view.findViewById(R.id.txtLugar);
+        TextView txtTelefono = (TextView) view.findViewById(R.id.txtTelefono);
+        TextView txtCoordenadas = (TextView) view.findViewById(R.id.txtCoordenadas);
+
 
         ImageView imgLogo = (ImageView) view.findViewById(R.id.imgLogo);
 
-        txtLugar.setText("PEPE");
-        txtUbicacion.setText("PEPEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\nPEPE\nPEPE");
-        Glide.with(this.ctx)
-                .load("https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/bar-71.png")
-                .into(imgLogo);
-
-        /*if (this.marcadorMapaDetalle != null){
+        if (this.marcadorMapaDetalle != null){
             txtLugar.setText(this.marcadorMapaDetalle.getNombre());
             txtUbicacion.setText(this.marcadorMapaDetalle.getUbicacion());
 
-            Glide.with(this.ctx)
-                    .load(this.marcadorMapaDetalle.getUrl_fotos().get(0))
-                    .into(imgLogo);
-        }*/
+            if (this.marcadorMapaDetalle.getNum_telefono() != null) txtTelefono.setText("Teléfono: " + this.marcadorMapaDetalle.getNum_telefono());
+
+            //Las coordenadas existen de forma obligatoria, por lo tanto no se validan
+            txtCoordenadas.setText("Coordenadas: \n" +
+                    "Latitud: " + this.marcadorMapaDetalle.getCoordenadas().latitude + "\n" +
+                    "Longitud: " + this.marcadorMapaDetalle.getCoordenadas().longitude);
+
+
+            if (this.marcadorMapaDetalle.getUrl_fotos() != null)
+            {
+                if (this.marcadorMapaDetalle.getUrl_fotos().size() > 0)
+                {
+                    Glide.with(this.ctx)
+                            .load(this.marcadorMapaDetalle.getUrl_fotos().get(0))
+                            .into(imgLogo);
+                }
+            }
+
+            if (this.marcadorMapaDetalle.getHorario() != null){
+                String horario = "";
+                for (int i = 0; i < this.marcadorMapaDetalle.getHorario().size(); i++){
+                    horario += this.marcadorMapaDetalle.getHorario().get(i) + "\n";
+                }
+
+                if (horario != "" && this.marcadorMapaDetalle.getHorario().size() > 0)
+                    txtHorario.setText("Horario: \n" + horario);
+            }
+
+
+        }
     }
 
     @Nullable

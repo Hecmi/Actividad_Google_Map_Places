@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class MarcadorMapaDetalle {
 
     String place_id;
+    String url_icono_tipo_lugar;
     String nombre;
     String ubicacion;
     LatLng coordenadas;
@@ -31,6 +32,7 @@ public class MarcadorMapaDetalle {
     public MarcadorMapaDetalle (JSONObject jObjectLugar) throws JSONException {
 
         String place_id = jObjectLugar.getString("place_id");
+        String icon_url_lugar = jObjectLugar.getString("icon");
 
         //Obtener las coordenadas (latitud y longitud de los lugares)
         JSONObject jObjectGeometry = jObjectLugar.getJSONObject("geometry");
@@ -47,6 +49,7 @@ public class MarcadorMapaDetalle {
         this.nombre = name_place;
         this.place_id = place_id;
         this.coordenadas = latLng;
+        this.url_icono_tipo_lugar = icon_url_lugar;
     }
 
     public MarcadorMapaDetalle(){ }
@@ -55,7 +58,6 @@ public class MarcadorMapaDetalle {
 
         if (lista_lugares != null){
             for (int i = 0; i < lista_lugares.size(); i++){
-                Log.i("clickeado :D", lista_lugares.get(i).coordenadas + " " + latLng);
                 if (lista_lugares.get(i).coordenadas.equals(latLng)){
                     place_id = lista_lugares.get(i).place_id;
                 }
@@ -134,7 +136,11 @@ public class MarcadorMapaDetalle {
         }
 
         //Definir la dirección completa:
-        direccion_completa = pais + ", " + ciudad + ", " + ruta +  ", " + calle_numero;
+        if (pais != "") direccion_completa += pais ;
+        if (ciudad != "") direccion_completa += ", " + ciudad;
+        if (ruta != "") direccion_completa += ", " + ruta;
+        if (ruta != "") direccion_completa += calle_numero;
+
         marcadorMapaDetalleEditar.ubicacion = direccion_completa;
 
         Log.i("TEST-2", "direccion_completa = " + direccion_completa);
@@ -165,7 +171,7 @@ public class MarcadorMapaDetalle {
             }
         }
         if (jObjectLugarDetalle.has("formatted_phone_number")){
-            this.num_telefono = jObjectLugarDetalle.getString("formatted_phone_number");
+            marcadorMapaDetalleEditar.num_telefono = jObjectLugarDetalle.getString("formatted_phone_number");
         }
 
         return marcadorMapaDetalleEditar;
@@ -186,6 +192,14 @@ public class MarcadorMapaDetalle {
 
     public void setPlace_id(String place_id) {
         this.place_id = place_id;
+    }
+
+    public String getUrl_icono_tipo_lugar() {
+        return url_icono_tipo_lugar;
+    }
+
+    public void setUrl_icono_tipo_lugar(String url_icono_tipo_lugar) {
+        this.url_icono_tipo_lugar = url_icono_tipo_lugar;
     }
 
     public String getNombre() {
